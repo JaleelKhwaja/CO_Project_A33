@@ -59,6 +59,8 @@ def check_typA(instrn, ln_nmber):
             print("line", ln_nmber, "Typos in Register name")
             return False
 
+    # if len(list) != len(set(list)): edit this after doubt clearance
+    #     return False
     return True
 def check_typB(instrn, ln_nmber):
     list = instrn.split()
@@ -218,7 +220,12 @@ def trnslt_E(instrn):
         s = "111110000" + lbl
     return s
 #********************************************************************
-#checks for all initial variable declarations and adds it to the dictionary of variables.
+
+
+# main code
+# this loop checks for all initial variable declarations and adds it to the dictionary of variables.
+
+
 line_cnt = 1
 for line in line_list:
     line = line.strip()
@@ -272,7 +279,7 @@ for i in range(line_cnt - 1, len(line_list)):
         line_list[line_cnt-1] = line + "\n"
         line = line.strip()
         split_lst=line.split()
-         #this being written with the assumption that label instructions can be present without any instruction referring it.
+        #this being written with the assumption that label instructions can be present without any instruction referring it.
     else:
         opcd = split_lst[0]
 
@@ -327,8 +334,11 @@ for i in range(line_cnt - 1, len(line_list)):
                 print("line", line_cnt, gn_err)
                 exit()
             main_str = main_str + "1101000000000000" + "\n"
+            # print("1101000000000000")
             hlt_reached = True
         line_cnt+=1
+        # print(line)
+        # print(instrn_cnt)
         instrn_cnt+=1
 gapped_string_lst.append(main_str)
 if not hlt_reached:
@@ -343,3 +353,42 @@ if (tot_instrn_cnt>128) :
 elif tot_instrn_cnt + len(var_dic)>128:
     print(gn_err, "variable storage overflow")
     exit()
+
+
+# print(tot_instrn_cnt)
+# print("main code ends")
+
+# print("var_dic:", var_dic)
+# print("***")
+# print("label_dic:", label_dic)
+# print("***")
+# print("update_dic:", update_dic)
+j = 0
+add_str = ""
+# for i in gapped_string_lst:
+#print(line_list)
+
+#     print("***")
+#     print(i)
+# print("#"*10)
+for line in update_dic:
+    if update_dic[line] == "D":
+        # print("DD")
+        # print("this->", line_list[line-1])
+        add_str = trnslt_D(line_list[line-1], tot_instrn_cnt)
+
+    else:
+        # print("eee")
+        # print(line_list[line-1])
+        if check_typE(line_list[line-1], line):
+            add_str = trnslt_E(line_list[line-1])
+            # print(add_str)
+        else:
+            exit()
+    fin_str = fin_str + gapped_string_lst[j] + add_str + "\n"
+    j+=1
+fin_str = fin_str + gapped_string_lst[j]
+fin_str = fin_str.strip()
+print(fin_str, end="")
+
+
