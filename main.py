@@ -1,4 +1,4 @@
-fl = "assembly.txt"  # assembly code file name
+fl = "assembly_code1.txt"  # assembly code file name
 file = open(fl, "r")
 line_list = file.readlines()
 file.close()
@@ -59,8 +59,6 @@ def check_typA(instrn, ln_nmber):
             print("line", ln_nmber, "Typos in Register name")
             return False
 
-    # if len(list) != len(set(list)): edit this after doubt clearance
-    #     return False
     return True
 def check_typB(instrn, ln_nmber):
     list = instrn.split()
@@ -220,11 +218,7 @@ def trnslt_E(instrn):
         s = "111110000" + lbl
     return s
 #********************************************************************
-
-
-# main code
-
-# this loop checks for all initial variable declarations and adds it to the dictionary of variables.
+#checks for all initial variable declarations and adds it to the dictionary of variables.
 line_cnt = 1
 for line in line_list:
     line = line.strip()
@@ -243,9 +237,6 @@ for line in line_list:
             break
     line_cnt += 1
 
-# this loop starts checking and translating after variable declartions
-# print(line_list)
-# print(line_cnt)
 instrn_cnt = 1
 update_dic = {}
 gapped_string_lst = []
@@ -317,3 +308,38 @@ for i in range(line_cnt - 1, len(line_list)):
                 # print(trnslt_C(line))
             else:
                 exit()
+        elif opcd in typD:
+            if check_typD(line, line_cnt):
+                update_dic[line_cnt] = "D"
+                gapped_string_lst.append(main_str)
+                main_str = ""
+            else:
+                exit()
+        elif opcd in typE:
+            if len(line.split())!=2:
+                print("line", line_cnt, gn_err)
+                exit()
+            update_dic[line_cnt] = "E"
+            gapped_string_lst.append(main_str)
+            main_str = ""
+        elif opcd in typF:
+            if len(line.split())!=1:
+                print("line", line_cnt, gn_err)
+                exit()
+            main_str = main_str + "1101000000000000" + "\n"
+            hlt_reached = True
+        line_cnt+=1
+        instrn_cnt+=1
+gapped_string_lst.append(main_str)
+if not hlt_reached:
+    print("Missing hlt instruction")
+    exit()
+fin_str = ""
+
+tot_instrn_cnt = instrn_cnt-1
+if (tot_instrn_cnt>128) :
+    print(gn_err, "instruction limit exceeded, limit = 128")
+    exit()
+elif tot_instrn_cnt + len(var_dic)>128:
+    print(gn_err, "variable storage overflow")
+    exit()
