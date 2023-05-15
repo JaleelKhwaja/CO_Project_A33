@@ -1,4 +1,4 @@
-fl = "assembly_code1.txt"  # assembly code file name
+fl = "assembly.txt"  # assembly code file name
 file = open(fl, "r")
 line_list = file.readlines()
 file.close()
@@ -221,7 +221,9 @@ def trnslt_E(instrn):
     return s
 #********************************************************************
 
+
 # main code
+
 # this loop checks for all initial variable declarations and adds it to the dictionary of variables.
 line_cnt = 1
 for line in line_list:
@@ -241,6 +243,9 @@ for line in line_list:
             break
     line_cnt += 1
 
+# this loop starts checking and translating after variable declartions
+# print(line_list)
+# print(line_cnt)
 instrn_cnt = 1
 update_dic = {}
 gapped_string_lst = []
@@ -276,7 +281,7 @@ for i in range(line_cnt - 1, len(line_list)):
         line_list[line_cnt-1] = line + "\n"
         line = line.strip()
         split_lst=line.split()
-        #this being written with the assumption that label instructions can be present without any instruction referring it.
+         #this being written with the assumption that label instructions can be present without any instruction referring it.
     else:
         opcd = split_lst[0]
 
@@ -298,5 +303,17 @@ for i in range(line_cnt - 1, len(line_list)):
                 else:
                     main_str = main_str + trnslt_C(line) + "\n"
                     # print(trnslt_C(line))
+            else:
+                exit()
+        elif opcd in typB:
+            if check_typB(line, line_cnt):
+                main_str = main_str + trnslt_B(line) + "\n"
+                # print(trnslt_B(line))
+            else:
+                exit()
+        elif opcd in typC:
+            if check_typC(line, line_cnt):
+                main_str = main_str + trnslt_C(line) + "\n"
+                # print(trnslt_C(line))
             else:
                 exit()
