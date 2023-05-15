@@ -390,5 +390,9 @@ for line in update_dic:
 fin_str = fin_str + gapped_string_lst[j]
 fin_str = fin_str.strip()
 print(fin_str, end="")
+file_o = open("binary_cd.txt", "w")
+file_o.write(fin_str)
+file_o.close()
+
 
 
