@@ -1,4 +1,4 @@
-fl = "assembly.txt"  # assembly code file name
+fl = "assembly_code1.txt"  # assembly code file name
 file = open(fl, "r")
 line_list = file.readlines()
 file.close()
@@ -128,3 +128,94 @@ def check_typD(instrn, ln_nmber):
         print("line", ln_nmber, "Use of Undefined variables!")
         return False
     return True
+
+def check_typE(instrn, ln_nmber):
+    list = instrn.split()
+    if len(list)!=2:
+        print("line", ln_nmber, gn_err)
+        return False
+    if list[1] in var_dic:
+        print("line", ln_nmber, "Misuse of variable as label")
+        return False
+    if list[1] not in label_dic:
+        print("line", ln_nmber, "Use of undefined label")
+        return False
+    return True
+
+#****************************************************************
+# TRANSLATOR FUNCTIONS
+def trnslt_A(instrn):
+    n = instrn.split()
+    reg1 = intbin(int(n[1][1]), 3)
+    reg2 = intbin(int(n[2][1]), 3)
+    reg3 = intbin(int(n[3][1]), 3)
+    if n[0] == "add":
+        s = "0000000" + str(reg1) + str(reg2) + str(reg3)
+    if n[0] == "sub":
+        s = "0000100" + str(reg1) + str(reg2) + str(reg3)
+    if n[0] == "mul":
+        s = "0011000" + str(reg1) + str(reg2) + str(reg3)
+    if n[0] == "xor":
+        s = "0101000" + str(reg1) + str(reg2) + str(reg3)
+    if n[0] == "or":
+        s = "0101100" + str(reg1) + str(reg2) + str(reg3)
+    if n[0] == "and":
+        s = "0110000" + str(reg1) + str(reg2) + str(reg3)
+
+    return s
+def trnslt_B(instrn):
+    n = instrn.split()
+    reg1 = intbin(int(n[1][1]), 3)
+    imd_val = str(intbin(int(n[2][1:]), 7))
+    if n[0] == "mov":
+        s = "000100" + str(reg1) + imd_val
+    if n[0] == "ls":
+        s = "010010" + str(reg1) + imd_val
+    if n[0] == "rs":
+        s = "010000" + str(reg1) + imd_val
+
+    return s
+
+def trnslt_C(instrn):
+    n = instrn.split()
+    reg1 = intbin(int(n[1][-1]), 3)
+    if n[2] == "FLAGS":
+        reg2 = 111
+    else:
+        reg2 = intbin(int(n[2][-1]), 3)
+
+    if n[0] == "mov":
+        s = "0001100000" + str(reg1) + str(reg2)
+    elif n[0] == "div":
+        s = "0011100000" + str(reg1) + str(reg2)
+    elif n[0] == "not":
+        s = "0110100000" + str(reg1) + str(reg2)
+    elif n[0] == "cmp":
+        s = "0111000000" + str(reg1) + str(reg2)
+
+    return s
+
+def trnslt_D(instrn, tot_lines):
+    n = instrn.split()
+    reg1 = intbin(int(n[1][-1]), 3)
+    var_indx = list(var_dic.keys()).index(n[2])
+    var_bin = str(intbin(tot_lines + var_indx, 7))
+    # print(var_bin)
+    if n[0] == "ld":
+        s = "001000" + str(reg1) + var_bin
+    if n[0] == "st":
+        s = "001010" + str(reg1) + var_bin
+    return s
+
+def trnslt_E(instrn):
+    n = instrn.split()
+    lbl = str(intbin(label_dic[n[1]]-1, 7))
+    if n[0] == "jmp":
+        s = "011110000" + lbl
+    elif n[0] == "jlt":
+        s = "111000000" + lbl
+    elif n[0] == "jgt":
+        s = "111010000" + lbl
+    elif n[0] == "je":
+        s = "111110000" + lbl
+    return s
