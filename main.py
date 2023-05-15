@@ -219,3 +219,84 @@ def trnslt_E(instrn):
     elif n[0] == "je":
         s = "111110000" + lbl
     return s
+#********************************************************************
+
+# main code
+# this loop checks for all initial variable declarations and adds it to the dictionary of variables.
+line_cnt = 1
+for line in line_list:
+    line = line.strip()
+    if line == "":
+        line_cnt+=1
+        continue
+    else:
+        if line.split()[0]== "var":
+            if is_valid_var_instn(line):
+                var_dic[line.split()[1]] = {"adrs": 0, "data": 0}
+            else:
+                print("line", line_cnt, gn_err)
+                exit()
+        else:
+            lst_line = line
+            break
+    line_cnt += 1
+
+instrn_cnt = 1
+update_dic = {}
+gapped_string_lst = []
+hlt_reached = False
+main_str = ""
+# print("main code starts")
+for i in range(line_cnt - 1, len(line_list)):
+    line = line_list[i].strip()
+    if line == "":
+        line_cnt+=1
+        continue
+    if hlt_reached:
+        print("line", line_cnt-1, "hlt not being used as the last instruction")
+        exit()
+    split_lst = line.split()
+    if split_lst[0] == "var" and (is_valid_var_instn(line)):
+        print("line:", line_cnt, ": Error!, Variable not declared at the beginning.")
+        exit()
+
+    if split_lst[0][-1] == ":":
+        if split_lst[0][:-1] in label_dic:
+            print("line", line_cnt, gn_err, "Repetition in labelling")
+            exit()
+        label_dic[split_lst[0][:-1]] = instrn_cnt
+        if split_lst[0][:-1] in var_dic:
+            print("line", line_cnt, "Misuse of variable as label.")
+            exit()
+        if len(split_lst)==1:
+            line_cnt+=1
+            continue
+        opcd = split_lst[1]
+        line = " ".join(split_lst[1:])
+        line_list[line_cnt-1] = line + "\n"
+        line = line.strip()
+        split_lst=line.split()
+        #this being written with the assumption that label instructions can be present without any instruction referring it.
+    else:
+        opcd = split_lst[0]
+
+    if opcd not in opcode_list:
+        print("line", line_cnt, ": Typos in instruction name")
+        exit()
+    else:
+        if opcd in typA:
+            if check_typA(line, line_cnt):
+                main_str = main_str + trnslt_A(line) + "\n"
+                #print(trnslt_A(line))
+            else:
+                exit()
+        elif opcd == "mov":
+            if check_mov(line, line_cnt):
+                if split_lst[2][0]=="$":
+                    main_str = main_str + trnslt_B(line) + "\n"
+                    # print(trnslt_B(line))
+                else:
+                    main_str = main_str + trnslt_C(line) + "\n"
+                    # print(trnslt_C(line))
+            else:
+                exit()
