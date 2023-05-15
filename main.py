@@ -1,4 +1,4 @@
-fl = "assembly_code1.txt"  # assembly code file name
+fl = "assembly.txt"  # assembly code file name
 file = open(fl, "r")
 line_list = file.readlines()
 file.close()
@@ -59,4 +59,72 @@ def check_typA(instrn, ln_nmber):
             print("line", ln_nmber, "Typos in Register name")
             return False
 
+    # if len(list) != len(set(list)): edit this after doubt clearance
+    #     return False
+    return True
+def check_typB(instrn, ln_nmber):
+    list = instrn.split()
+    if len(list)!=3:
+        print("line", ln_nmber, gn_err)
+        return False
+    if "FLAGS" == list[1]:
+        print("line", ln_nmber, ": Illegal use of FLAGS register!")
+        return False
+    if list[1] not in reg_list:
+        print("line", ln_nmber, "Typos in Register name")
+        return False
+    if list[2][0] != "$":
+        print("line", ln_nmber, gn_err)
+        return False
+    if not list[2][1:].isdigit():
+        if list[2][2:].isdigit() and list[2][1]=="-":
+            print("line", ln_nmber, ": Illegal immediate values")
+        else:
+            print("line", ln_nmber, gn_err)
+        return False
+    if int(list[2][1:]) > 127: #negative values are checked by the if condtion above only, be detecting "-" sign
+        print("line", ln_nmber, ": Illegal immediate values")
+        return False
+    return True
+def check_typC(instrn, ln_nmber):
+    list = instrn.split()
+    if len(list)!=3:
+        print("line", ln_nmber, gn_err)
+        return False
+    if "FLAGS" == list[1]:
+        print("line", ln_nmber, ": Illegal use of FLAGS register!")
+        return False
+    if list[1] not in reg_list:
+        print("line", ln_nmber, "Typos in Register name")
+        return False
+    if list[2] not in reg_list and list[2]!="FLAGS":
+        print("line", ln_nmber, "Typos in Register name")
+        return False
+    return True
+def check_mov(instrn, ln_nmber):
+    list = instrn.split()
+    if len(list)!=3:
+        return False
+    if list[2][0]=="$":
+        return check_typB(instrn, ln_nmber)
+    else:
+        return check_typC(instrn, ln_nmber)
+
+def check_typD(instrn, ln_nmber):
+    list = instrn.split()
+    if len(list)!=3:
+        print("line", ln_nmber, gn_err)
+        return False
+    if "FLAGS" == list[1]:
+        print("line", ln_nmber, ": Illegal use of FLAGS register!")
+        return False
+    if list[1] not in reg_list:
+        print("line", ln_nmber, "Typos in Register name")
+        return False
+    if list[2] in label_dic:
+        print("line", ln_nmber, "Use of undefined variable and Misuse of label as variable")
+        return False
+    if list[2] not in var_dic:
+        print("line", ln_nmber, "Use of Undefined variables!")
+        return False
     return True
