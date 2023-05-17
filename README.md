@@ -26,5 +26,12 @@ Ther is line_cnt variable whcih keeps track of line number, instrn_cnt variable 
 
 Then eveytime in the second loop it reads a line it check whether the first word is a valid opcode or not , if not it throws and error, and also it checks whther a new being define or not, if yes then it throws the error. , 
 
-if the opcode is valid then it checks for error with its respective error checker function once that is passed is passed 
+if the opcode is valid then it checks for error with its respective error checker function once that is passed it translates it to its binary form 
+for opcode of typd D it stores its line number in update_dic dicitonary to translate it later to binary after assigning memmory adreses to all the variables and all the translated instructions till that point is stored in gapped_string string list. to 
+
+similary for typE also it marks its line number to check translate it later after checking for valid label definitions. 
+
+if hlt is reached then it checks for further instruction if there is then it throws error else it continues 
+
+then it goes in the list where all the typD and typE cann finally be checked for error and be translated and then it is joined appropriatedly with the stings in the gaped string list and the final output string is outputed. 
 
