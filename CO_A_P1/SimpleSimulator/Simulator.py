@@ -348,3 +348,41 @@ def ls(l):
 
 
 # def ls(r1, imm):
+
+def xor(l):
+    # print("xor")
+    r1, r2, r3 = l
+
+    v = reg_dic[r2] ^ reg_dic[r3]
+    reg_dic[r1] = v
+    reset_flag()
+    return False, PC+1
+
+
+def Or(l):
+    # print("or")
+    r1, r2, r3 = l
+    reg_dic[r1] = reg_dic[r2] & reg_dic[r3]
+    reset_flag()
+    return False, PC+1
+
+def And(l):
+    # print("and")
+    r1, r2, r3 = l
+    reg_dic[r1] = reg_dic[r2] | reg_dic[r3]
+    reset_flag()
+    return False, PC+1
+
+def inv(l):
+    # print("inv")
+    r1, r2 = l
+    s = intbin(reg_dic[r2], 16)
+    fs = ""
+    for i in s:
+        if i == "0":
+            fs = fs+"1"
+        else:
+            fs = fs+"0"
+    reg_dic[r1] = binary_to_int(fs)
+    reset_flag()
+    return False, PC+1
