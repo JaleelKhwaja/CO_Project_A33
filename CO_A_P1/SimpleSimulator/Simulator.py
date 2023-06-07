@@ -506,3 +506,35 @@ def EE_execute(instruction):
     if opcode == "rs":
         operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
         return rs(operands)
+    if opcode == "ls":
+        operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
+        return ls(operands)
+    if opcode == "xor":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return xor(operands)
+    if opcode == "or":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return Or(operands)
+    if opcode == "and":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return And(operands)
+    if opcode == "not":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return inv(operands)
+    if opcode == "cmp":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return cmp(operands)
+    if opcode == "jmp":
+        operands = [binary_to_int(operands[0])]
+        return jmp(operands)
+    if opcode == "jlt":
+        operands = [binary_to_int(operands[0])]
+        return jlt(operands)
+    if opcode == "jgt":
+        operands = [binary_to_int(operands[0])]
+        return jgt(operands)
+    if opcode == "je":
+        operands = [binary_to_int(operands[0])]
+        return je(operands)
+    if opcode == "hlt":
+        return hlt(operands)
