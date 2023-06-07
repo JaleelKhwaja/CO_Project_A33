@@ -149,3 +149,56 @@ def MEM_dump():
 
 
 #single instn executin funs (the parameters are register names or decimal values)
+
+def inc(l):
+    r1 = l[0]
+    sum = reg_dic[r1] + 1
+    if (sum > 65535):
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic[r1] = 0
+    else:
+        reg_dic[r1] = sum
+        reset_flag()
+    return False, PC+1
+
+def dec(l):
+    r1 = l[0]
+    val = reg_dic[r1] - 1
+    if val < 0:
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic[r1] = 0
+    else:
+        reg_dic[r1] = val
+        reset_flag()
+    return False, PC+1
+
+def lea(l):
+    # print("st")
+    r1, mem_adrs = l
+    reg_dic[r1] = mem_adrs
+    reset_flag()
+    return False, PC+1
+def strr(l):
+    r1, r2 = l
+    MEM[reg_dic[r2]] = intbin(reg_dic[r1], 16)
+    reset_flag()
+    return False, PC+1
+def ldr(l):
+    r1, r2 = l
+    data = MEM[reg_dic[r2]]
+    data = binary_to_int(data)
+    reg_dic[r1] = data
+    reset_flag()
+    return False, PC+1
+def add(l):
+    # print("add")
+    r1, r2, r3 = l
+    sum = reg_dic[r2] + reg_dic[r3]
+    # print(sum)
+    if (sum > 65535):
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic[r1] = 0
+    else:
+        reg_dic[r1] = sum
+        reset_flag()
+    return False, PC+1
