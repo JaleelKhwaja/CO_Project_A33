@@ -202,3 +202,50 @@ def add(l):
         reg_dic[r1] = sum
         reset_flag()
     return False, PC+1
+
+def addf(l):
+    # print("addf")
+    r1, r2, r3 = l
+    f2 = reg_dic[r2] & 255
+    f3 = reg_dic[r3] & 255
+    f2 = flt_dec(f2)
+    f3 = flt_dec(f3)
+    f1 = f2 + f3
+    if (f1 > 31.5):
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic[r1] = 0
+    else:
+        f1 = dec_flt(f1)
+        f1 = binary_to_int(f1)
+        reg_dic[r1] = f1
+        reset_flag()
+    return False, PC + 1
+
+
+def subf(l):
+    # print("subf")
+    r1, r2, r3 = l
+    f2 = reg_dic[r2] & 255
+    f3 = reg_dic[r3] & 255
+    f2 = flt_dec(f2)
+    f3 = flt_dec(f3)
+    f1 = f2 - f3
+    print(f1, f2, f3)
+    if (f1 < 0):
+        # print("overflow")
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic[r1] = 0
+    else:
+        f1 = dec_flt(f1)
+        f1 = binary_to_int(f1)
+        reg_dic[r1] = f1
+        reset_flag()
+    return False, PC + 1
+
+
+def movf(l):
+    # print("movf")
+    r1, imm = l
+
+    reg_dic[r1] = imm
+    return False, PC + 1
