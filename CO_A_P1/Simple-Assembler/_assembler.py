@@ -1,19 +1,21 @@
 import sys
-fl = "assembly_code1.txt"  # assembly code file name
+# fl = "assembly_code1.txt"  # assembly code file name
 #file = open(fl, "r")
 line_list = sys.stdin.readlines()
 #file.close()
 
 reg_dic = {"R0": 0, "R1": 0, "R2": 0, "R3": 0, "R4": 0, "R5": 0, "R6": 0,"FLAGS": ['0', '0', '0', '0']}  # this is dictionary of valid register names with the data they contain.
-opcode_list = ["add", "sub", "mov", "ld", "st", "mul", "div", "rs", "ls", "xor", "or", "and", "not", "cmp", "jmp", "jlt", "jgt", "je", "hlt"]
+opcode_list = ["add", "sub", "mov", "ld", "st", "mul", "div", "rs", "ls", "xor", "or", "and", "not", "cmp", "jmp", "jlt", "jgt", "je", "hlt", "addf", "subf", "movf", "inc", "dec", "lea", "ror", "ldr", "strr"]
 reg_list = ["R0", "R1", "R2", "R3", "R4", "R5", "R6"]
 
-typA = ["add", "sub", "mul", "xor", "or", "and"]
+typA = ["add", "sub", "mul", "xor", "or", "and", "addf", "subf"]
 typB = ["mov", "rs", "ls"]
-typC = ["mov", "div", "not", "cmp"]
-typD = ["ld", "st"]
+typB_new = ["movf"]
+typC = ["mov", "div", "not", "cmp", "ldr", "strr"]
+typD = ["ld", "st", "lea"]
 typE = ["jmp", "jlt", "jgt", "je"]
 typF = ["hlt"]
+typG = ["inc", "dec"]
 gn_err = ": General Syntax Error"
 
 instn_lst = []  # list of all intstructions mostly won't be needed
@@ -43,6 +45,31 @@ def is_valid_var_instn(s):
         return False
 
     return True
+
+def binary_to_int(binary_string):
+    decimal_value = int(binary_string, 2)
+    return decimal_value
+
+def dec_flt(n):
+    exp = 3
+    while n>=2:
+        n = n/2
+        exp+=1
+    while n<1:
+        n = n*2
+        exp = exp-1
+    afp = n - int(n)
+    # print(afp)
+    m = ''
+    for i in range(5):
+        afp = afp * 2
+        bfp = afp - (afp - int(afp))
+        afp = afp - bfp
+        m = m + str(int(bfp))
+        # print(bfp)
+        bfp = 0
+    # print(intbin(exp, 3), m)
+    return str(intbin(exp, 3))+m
 
 #*************************************************
 # ERROR CHECKER FUNCTIONS
@@ -85,6 +112,38 @@ def check_typB(instrn, ln_nmber):
         return False
     if int(list[2][1:]) > 127: #negative values are checked by the if condtion above only, be detecting "-" sign
         print("line", ln_nmber, ": Illegal immediate values")
+        return False
+    return True
+
+def check_typB_new(instrn, ln_nmber):
+    # print("hi")
+    list = instrn.split()
+    if len(list)!=3:
+        print("line", ln_nmber, gn_err)
+        return False
+    if "FLAGS" == list[1]:
+        print("line", ln_nmber, ": Illegal use of FLAGS register!")
+        return False
+    if list[1] not in reg_list:
+        print("line", ln_nmber, "Typos in Register name")
+        return False
+    if list[2][0] != "$":
+        print("line", ln_nmber, gn_err)
+        return False
+
+    #edit the part below to verify the range
+
+    if not list[2][1:].replace(".", "").isdigit():
+        if list[2][2:].replace(".", "").isdigit() and list[2][1]=="-":
+            print("line", ln_nmber, ": Illegal immediate values")
+            # print("kjsld")
+        else:
+            print("line", ln_nmber, gn_err)
+        return False
+    # print(float(list[2][1:]))
+    if float(list[2][1:]) > 31.5 or float(list[2][1:])<0.125: #negative values are checked by the if condtion above only, be detecting "-" sign
+        print("line", ln_nmber, ": Illegal immediate values")
+        # print("jale")
         return False
     return True
 def check_typC(instrn, ln_nmber):
@@ -142,6 +201,15 @@ def check_typE(instrn, ln_nmber):
         print("line", ln_nmber, "Use of undefined label")
         return False
     return True
+def check_typG(instrn, ln_nmber):
+    list = instrn.split()
+    if len(list)!=2:
+        print("line", ln_nmber, gn_err)
+        return False
+    if list[1] not in reg_dic:
+        print("line", ln_nmber, "Typos in register names")
+        return False
+    return True
 
 #****************************************************************
 # TRANSLATOR FUNCTIONS
@@ -162,6 +230,10 @@ def trnslt_A(instrn):
         s = "0101100" + str(reg1) + str(reg2) + str(reg3)
     if n[0] == "and":
         s = "0110000" + str(reg1) + str(reg2) + str(reg3)
+    if n[0] == "addf":
+        s = "1000000" + str(reg1) + str(reg2) + str(reg3)
+    if n[0] == "subf":
+        s = "1000100" + str(reg1) + str(reg2) + str(reg3)
 
     return s
 def trnslt_B(instrn):
@@ -177,6 +249,13 @@ def trnslt_B(instrn):
 
     return s
 
+def trnslt_B_new(instrn):
+    n = instrn.split()
+    reg1 = intbin(int(n[1][1]), 3)
+    imd_val = dec_flt(float(n[2][1:]))
+    # print(imd_val)
+    s = "10010" + str(reg1) + imd_val
+    return s
 def trnslt_C(instrn):
     n = instrn.split()
     reg1 = intbin(int(n[1][-1]), 3)
@@ -193,6 +272,10 @@ def trnslt_C(instrn):
         s = "0110100000" + str(reg1) + str(reg2)
     elif n[0] == "cmp":
         s = "0111000000" + str(reg1) + str(reg2)
+    elif n[0] == "ldr":
+        s = "1010000000" + str(reg1) + str(reg2)
+    elif n[0] == "strr":
+        s = "1010100000" + str(reg1) + str(reg2)
 
     return s
 
@@ -206,6 +289,8 @@ def trnslt_D(instrn, tot_lines):
         s = "001000" + str(reg1) + var_bin
     if n[0] == "st":
         s = "001010" + str(reg1) + var_bin
+    if n[0] == "lea":
+        s = "100110" + str(reg1) + var_bin
     return s
 
 def trnslt_E(instrn):
@@ -219,6 +304,14 @@ def trnslt_E(instrn):
         s = "111010000" + lbl
     elif n[0] == "je":
         s = "111110000" + lbl
+    return s
+def trnslt_G(instrn):
+    n = instrn.split()
+    reg1 = intbin(int(n[1][1]), 3)
+    if n[0] == "inc":
+        s = "10110" + str(reg1) + "00000000"
+    elif n[0] == "dec":
+        s = "10111" + str(reg1) + "00000000"
     return s
 #********************************************************************
 
@@ -285,6 +378,7 @@ for i in range(line_cnt - 1, len(line_list)):
         opcd = split_lst[0]
 
     if opcd not in opcode_list:
+        print(opcd)
         print("line", line_cnt, ": Typos in instruction name")
         exit()
     else:
@@ -310,6 +404,11 @@ for i in range(line_cnt - 1, len(line_list)):
                 # print(trnslt_B(line))
             else:
                 exit()
+        elif opcd in typB_new:
+            if check_typB_new(line, line_cnt):
+                main_str = main_str + trnslt_B_new(line) + "\n"
+            else:
+                exit()
         elif opcd in typC:
             if check_typC(line, line_cnt):
                 main_str = main_str + trnslt_C(line) + "\n"
@@ -330,6 +429,12 @@ for i in range(line_cnt - 1, len(line_list)):
             update_dic[line_cnt] = "E"
             gapped_string_lst.append(main_str)
             main_str = ""
+        elif opcd in typG:
+            if check_typG(line, line_cnt):
+                main_str = main_str + trnslt_G(line) + "\n"
+                # print(trnslt_C(line))
+            else:
+                exit()
         elif opcd in typF:
             if len(line.split())!=1:
                 print("line", line_cnt, gn_err)
@@ -396,3 +501,21 @@ file_o = open("binary_cd.txt", "w")
 file_o.write(fin_str)
 file_o.close()
 
+# movf R0 $2.783
+# movf R1 $17.8573945
+# addf R2 R0 R1
+# hlt
+
+# var X
+# mov R4 $2
+# mov R0 $127
+# mov R5 $127
+# ls R5 $2
+# ls R0 $9
+# add R0 R0 R5
+# add R0 R0 R4
+# inc R0
+# inc R0
+# inc R0
+# dec R0
+# hlt
