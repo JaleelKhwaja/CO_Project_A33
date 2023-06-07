@@ -538,3 +538,19 @@ def EE_execute(instruction):
         return je(operands)
     if opcode == "hlt":
         return hlt(operands)
+
+#**************************************************************
+
+
+# cnt = 0
+# MEM_dump()
+# print("****")
+while not halted:
+    instruction = MEM_fetchDate(PC)
+    # print(instruction)
+    halted, new_PC = EE_execute(instruction)
+    # print(new_PC)
+    PC_dump()
+    RF_dump()
+    PC_update(new_PC)
+MEM_dump()
