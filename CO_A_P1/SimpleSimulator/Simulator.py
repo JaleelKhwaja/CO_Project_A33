@@ -458,3 +458,51 @@ def EE_execute(instruction):
     if opcode == "sub":
         operands = [reg_adrs_dic[i] for i in operands]
         return sub(operands)
+    if opcode == "addf":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return addf(operands)
+    if opcode == "subf":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return subf(operands)
+    if opcode == "inc":
+        # print(operands)
+        operands = [reg_adrs_dic[i] for i in operands]
+
+        return inc(operands)
+    if opcode == "dec":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return dec(operands)
+    if opcode == "mov_b":
+        # print("hello", operands)
+        operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
+        return mov_b(operands)
+    if opcode == "movf":
+        operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
+        return  movf(operands)
+    if opcode == "mov_c":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return mov_c(operands)
+    if opcode == "ldr":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return ldr(operands)
+    if opcode == "strr":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return strr(operands)
+    if opcode == "ld":
+        operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
+        return ld(operands)
+    if opcode == "st":
+        operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
+        return st(operands)
+    if opcode == "lea":
+        operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
+        return lea(operands)
+    if opcode == "mul":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return mul(operands)
+    if opcode == "div":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return div(operands)
+    if opcode == "rs":
+        operands = [reg_adrs_dic[operands[0]], binary_to_int(operands[1])]
+        return rs(operands)
