@@ -332,3 +332,19 @@ def div(l):
     return False, PC+1
 
 
+
+def rs(l):
+    # print("rs")
+    r1, imm = l
+    reg_dic[r1] = reg_dic[r1] >> imm
+    reset_flag()
+    return False, PC+1
+def ls(l):
+    # print("ls")
+    r1, imm = l
+    reg_dic[r1] = (reg_dic[r1] << imm) & 0b1111111111111111
+    reset_flag()
+    return False, PC+1
+
+
+# def ls(r1, imm):
