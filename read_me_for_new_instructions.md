@@ -8,7 +8,7 @@ The newly added instructions have following 5 new instructions
 
 **ldr:** (ldr reg1 reg2) It loads the the data stored in the Memory stored at the memory address stored in reg2 into reg1. It belongs to type 
 
-**str**: (str reg1 reg2) It stores the data of reg1 into memory at memory address stored in reg2
+**strr**: (str reg1 reg2) It stores the data of reg1 into memory at memory address stored in reg2
 
 The Type G follows the following syntax: Opcode(5bits) register(3bits) (8 unused bits)
 
