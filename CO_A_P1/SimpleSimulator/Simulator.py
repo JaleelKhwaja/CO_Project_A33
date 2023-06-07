@@ -249,3 +249,86 @@ def movf(l):
 
     reg_dic[r1] = imm
     return False, PC + 1
+
+def sub(l):
+    # print("sub")
+    r1, r2, r3 = l
+    if (reg_dic[r3]>reg_dic[r2]):
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic[r1] = 0
+    else:
+        dif = reg_dic[r2] - reg_dic[r3]
+        reg_dic[r1] = dif
+        reset_flag()
+    return False, PC+1
+
+
+def mov_b(l):
+    # print("mov_b")
+    # print("hi", l)
+    r1, imm = l
+    reg_dic[r1]=imm;
+    reset_flag()
+    return False, PC+1
+
+
+def mov_c(l):
+    # print("mov_c")
+    r1, r2 = l
+    if r2 == "FLAGS":
+        bin = str(reg_dic[r2]["V"]) + str(reg_dic[r2]["L"]) + str(reg_dic[r2]["G"]) + str(reg_dic[r2]["E"])
+        val = binary_to_int(bin)
+    else:
+        val = reg_dic[r2]
+    reg_dic[r1] = val
+    reset_flag()
+    return False, PC+1
+
+
+def ld(l):
+    # print("ld")
+    r1, mem_adrs = l
+    data = MEM[mem_adrs]
+    data = binary_to_int(data)
+    reg_dic[r1] = data
+    reset_flag()
+    return False, PC+1
+
+
+def st(l):
+    # print("st")
+    r1, mem_adrs = l
+    MEM[mem_adrs] = intbin(reg_dic[r1], 16)
+    reset_flag()
+    return False, PC+1
+
+
+def mul(l):
+    # print("mul")
+    r1, r2, r3 = l
+    prod = reg_dic[r2] * reg_dic[r3]
+    if prod > 65535:
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic[r1] = 0
+    else:
+        reg_dic[r1] = prod
+        reset_flag()
+    return False, PC+1
+
+
+def div(l):
+    # print("div")
+    r3, r4 = l
+    if reg_dic[r4] == 0:
+        reg_dic["FLAGS"]["V"] = 1
+        reg_dic["R0"] = 0
+        reg_dic["R1"] = 0
+    else:
+        q = reg_dic[r3]//reg_dic[r4]
+        r = reg_dic[r3]%reg_adrs_dic[r4]
+        reg_dic["R0"] = q
+        reg_dic["R1"] = r
+        reset_flag()
+    return False, PC+1
+
+
