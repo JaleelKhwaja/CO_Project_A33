@@ -386,3 +386,75 @@ def inv(l):
     reg_dic[r1] = binary_to_int(fs)
     reset_flag()
     return False, PC+1
+
+
+def cmp(l):
+    # print("cmp")
+    r1, r2 = l
+    v1 = reg_dic[r1]
+    v2 = reg_dic[r2]
+    if v1<v2:
+        reg_dic["FLAGS"]["L"]=1
+    if v1>v2:
+        reg_dic["FLAGS"]["G"] = 1
+    else:
+        reg_dic["FLAGS"]["E"] = 1
+    return False, PC+1
+
+
+
+def jmp(l):
+    # print("jmp")
+    adrs = l[0]
+    # print("hi ", adrs)
+    reset_flag()
+    return False, adrs
+
+def jlt(l):
+    # print("jlt")
+    adrs = l[0]
+
+    if reg_dic["FLAGS"]["L"]==1:
+        reset_flag()
+        return False, adrs
+    reset_flag()
+    return False, PC+1
+
+def jgt(l):
+    # print("jgt")
+    adrs = l[0]
+
+    if reg_dic["FLAGS"]["G"]==1:
+        reset_flag()
+        return False, adrs
+    reset_flag()
+    return False, PC+1
+
+def je(l):
+    # print("je")
+    adrs = l[0]
+    if reg_dic["FLAGS"]["E"]==1:
+        reset_flag()
+        return False, adrs
+    reset_flag()
+    return False, PC+1
+
+def hlt(l):
+    # print("hlt")
+    reset_flag()
+    return True, PC
+
+
+
+
+
+
+def EE_execute(instruction):
+    opcode = opcode_is(instruction)
+    operands = pull_operands(instruction)
+    if opcode == "add":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return add(operands)
+    if opcode == "sub":
+        operands = [reg_adrs_dic[i] for i in operands]
+        return sub(operands)
