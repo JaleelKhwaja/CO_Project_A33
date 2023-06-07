@@ -76,3 +76,76 @@ def intbin(n, x):
 def binary_to_int(binary_string):
     decimal_value = int(binary_string, 2)
     return decimal_value
+
+def flt_dec(n):
+    n = n & 255
+    s = intbin(n, 8);
+    mantissa = s[3:]
+    # print(mantissa)
+    mantissa = 32 + binary_to_int(mantissa)
+    exp = binary_to_int(s[:3]) - 3 - 5
+    num = mantissa * (2 ** exp)
+    # print(mantissa, exp)
+    return num
+
+
+def dec_flt(n):
+    exp = 3
+    while n >= 2:
+        n = n / 2
+        exp += 1
+    while n < 1:
+        n = n * 2
+        exp = exp - 1
+    afp = n - int(n)
+    # print(afp)
+    m = ''
+    for i in range(5):
+        afp = afp * 2
+        bfp = afp - (afp - int(afp))
+        afp = afp - bfp
+        m = m + str(int(bfp))
+        # print(bfp)
+        bfp = 0
+    # print(intbin(exp, 3), m)
+    return str(intbin(exp, 3)) + m
+
+
+def reset_flag():
+    for i in reg_dic["FLAGS"]:
+        reg_dic["FLAGS"][i]=0
+def PC_update(i):
+    global PC
+    PC = i
+#prints the value of PC as 7 bit binary
+def PC_dump():
+    print(intbin(PC, 7), end = "        ")
+
+#prints the values of all register in a single line
+def RF_dump():
+    for i in reg_dic:
+        if (i=="FLAGS"):
+            print("000000000000" + str(reg_dic[i]["V"]) + str(reg_dic[i]["L"]) + str(reg_dic[i]["G"]) + str(reg_dic[i]["E"]) )
+            break
+        print(intbin(reg_dic[i], 16), end = " ")
+
+
+#rreturn the value store in register R
+def get_RF(R):
+    return reg_dic[R]
+
+#returns the instuction stored in MEM[PC]
+def MEM_fetchDate(PC):
+    return MEM[PC];
+
+#prints all the 128 lines of the memeory
+def MEM_dump():
+    cnt=0
+    for l in MEM:
+        # if cnt==10:
+        #     break
+        print(l)
+        cnt+=1
+
+
+#single instn executin funs (the parameters are register names or decimal values)
